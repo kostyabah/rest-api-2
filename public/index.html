@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html><head>
+    <meta charset="utf-8">
+        <title>REST API</title>
+
+        <!-- bootstrap import -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+        <!-- google fonts import-->
+        <link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
+
+        <!-- style sheet import -->
+        <link href="/styles.css" rel="stylesheet" />
+</head>
+
+    <body>
+
+        <div id="homepage">
+            <h1>Find Co-workers in your area</h1>
+            <div id="ninjas"></div>
+        </div>
+        <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+        <script src="https://unpkg.com/react@15/dist/react.js"></script>
+        <script src="https://unpkg.com/react-dom@15/dist/react-dom.min.js"></script>
+        <script src="https://unpkg.com/react-router-dom/umd/react-router-dom.min.js"></script>
+
+        <!-- Create React Component -->
+        <script type="text/babel">
+        // define a React class
+        var Ninjas = React.createClass({
+            //define initial State
+            getInitialState: function(){
+                // initial state: an empty array of ninjas
+                return({
+                    ninjas: []
+                });
+            },
+            
+            //render the function
+            render: function(){
+                var ninjas = this.state.ninjas;
+                // function that displays the list of available users
+                ninjas = ninjas.map(function(ninja, index){
+                    
+                    // return the list element
+                    return(
+                        <li key={index}>
+                            {/* Availability */}
+                            <span className={ninja.available}></span>
+                            {/* Name: string */}
+                            <span className="name">{ninja.name}</span>
+                            {/* Rank: string */}
+                            <span className="rank">{ninja.rank}</span>
+                            {/* More info */}
+                            <span className="dist" ><Link to="/more">More</Link></span>
+
+                            
+
+                            {/* Distance */}
+                            <span className="dist">{Math.floor(ninja.dist.calculated / 1000)} km</span> 
+                        </li>
+                    );
+                });
+
+                <Route path="/more" component={MoreInfo} />
+
+                return(
+                    <div id="ninja-container">
+                        {/* Handle user's input  */}
+                        <form id="search" onSubmit={this.handleSubmit}>
+                            <label>Enter your Latitude:</label>
+                            <input type="text" ref="lat" placeholder="latitude" value="25.871" required />
+                            <label>Enter your Longitude:</label>
+                            <input type="text" ref="lng" placeholder="longitude" value="-80" required />
+                            <input type="submit" value="Find Ninjas" />
+                        </form>
+                        {/* List with users / ninjas */}
+                        <ul>{ninjas}</ul>
+                    </div>
+                );
+            }, 
+            
+            function About() {
+                                return (
+                                    <div>
+                                        <h2>About</h2>
+                                    </div>
+                                 );
+                            }
+            
+            // Working with user input: e == event
+            handleSubmit: function(e){
+                //tell the browser to prevent the default action, not be taken as it normally would be
+                e.preventDefault();
+                // reference to the longitude value set by the user 
+                var lng = this.refs.lng.value;
+                // reference to the latitude value set by the user 
+                var lat = this.refs.lat.value;
+                // function that tells the browser what to return after the request
+                fetch('/api/ninjas?lng=' + lng + '&lat=' + lat).then(function(data){
+                    // teel what to return after the GET request ↑
+                    return data.json();
+                }).then( json => { //setting the state when the promise is resolved
+                    this.setState({
+                        ninjas: json
+                    });
+                    console.log(json);
+                });
+            }
+        });
+
+        function About() {
+                                return (
+                                    <div>
+                                        <h2>About</h2>
+                                    </div>
+                                 );
+                            }
+        // tell the browser what to render
+        ReactDOM.render(<Ninjas />, document.getElementById('ninjas'));
+        </script>
+
+
+    </body>
+</html>
